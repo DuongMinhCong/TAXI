@@ -1,12 +1,209 @@
 <!DOCTYPE html>
 <html lang="vi">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tự Học</title>
-  </head>
-  <body>
-    <h1>Tự Học HTML CSS JS</h1>
-    <h2>Sửa lần 1</h2>
-  </body>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VF3 Fare Calculator</title>
+  <style>
+    :root{--primary:#2d7df4;--accent:#ff8800;--bg:#f5f7fa}
+    body{font-family:system-ui,Arial,Helvetica,sans-serif;background:var(--bg);margin:0;padding:18px}
+    .container{max-width:520px;margin:0 auto}
+    .card{background:#fff;border-radius:14px;padding:14px;margin-bottom:12px;box-shadow:0 6px 18px rgba(12,18,30,0.06)}
+    .title{font-size:18px;font-weight:700;margin-bottom:8px}
+    label{display:block;font-weight:600;margin-bottom:6px}
+    input[type=number]{width:100%;padding:10px;border-radius:10px;border:1px solid #e6e9ef;font-size:15px;margin-bottom:10px;box-sizing:border-box}
+    .row{display:flex;gap:10px}
+    .col{flex:1}
+    .muted{color:#6b7280;font-size:13px}
+    button{width:100%;padding:12px;border-radius:10px;border:0;background:var(--primary);color:#fff;font-weight:700;font-size:15px;cursor:pointer}
+    .btn-secondary{background:#28a745}
+    .btn-save{background:var(--accent)}
+    .hidden{display:none}
+    .detail{background:#f8fafc;padding:10px;border-radius:10px;margin-top:10px}
+    .line{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(0,0,0,0.06)}
+    .total{font-weight:900;font-size:18px;text-align:right;margin-top:8px}
+    @media(max-width:420px){.container{padding:0 8px}}
+  </style>
+</head>
+<body>
+<div class="container">
+  <div class="card">
+    <div class="title">TÍNH TIỀN CƯỚC</div>
+    <label for="km">Quãng đường (km)</label>
+    <input id="km" type="number" min="0" step="0.1" value="12" />
+
+    <label for="wait">Thời gian chờ (phút) — bắt đầu tính từ phút thứ 5</label>
+    <input id="wait" type="number" min="0" step="1" value="0" />
+
+    <label style="display:flex;align-items:center;gap:8px"><input id="night" type="checkbox" /> <span>Áp dụng phụ phí ban đêm</span></label>
+
+    <div style="height:8px"></div>
+    <button id="calcBtn">TÍNH TIỀN</button>
+  </div>
+
+  <div class="card">
+    <div class="title">KẾT QUẢ</div>
+    <div id="resultBox" class="hidden">
+      <div class="detail" id="detailBox"></div>
+      <div class="total" id="totalBox">0 đ</div>
+    </div>
+    <div id="noData" class="muted">Chưa có dữ liệu. Nhập quãng đường rồi bấm "TÍNH TIỀN".</div>
+  </div>
+
+  <button id="togglePrice" class="btn-secondary">Hiện / Ẩn bảng giá</button>
+
+  <div id="priceBox" class="card hidden" aria-hidden="true">
+    <div class="title">BẢNG GIÁ (chỉnh & lưu)</div>
+
+    <label>Giá mở cửa (0–2 km)</label>
+    <input id="openPrice" type="number" />
+
+    <div class="row">
+      <div class="col">
+        <label>Giá km 2–10 (đ/km)</label>
+        <input id="price1" type="number" />
+      </div>
+      <div class="col">
+        <label>Giá km &gt;10 (đ/km)</label>
+        <input id="price2" type="number" />
+      </div>
+    </div>
+
+    <label>Giá chờ (đ/phút) — tính từ phút thứ 5</label>
+    <input id="waitPrice" type="number" />
+
+    <label>Phụ phí ban đêm (đ)</label>
+    <input id="nightExtra" type="number" />
+
+    <button id="savePrice" class="btn-save">LƯU BẢNG GIÁ</button>
+    <div style="height:6px"></div>
+    <button id="resetPrice" style="background:#ccc;color:#111">RESET về mặc định</button>
+  </div>
+
+</div>
+
+<script>
+// Defaults
+const DEFAULTS = {
+  openPrice: 15000,
+  price1: 7000,
+  price2: 6000,
+  waitPrice: 2000,
+  nightExtra: 0
+};
+
+function loadPrice() {
+  // load from localStorage or use defaults
+  document.getElementById('openPrice').value = localStorage.getItem('openPrice') || DEFAULTS.openPrice;
+  document.getElementById('price1').value = localStorage.getItem('price1') || DEFAULTS.price1;
+  document.getElementById('price2').value = localStorage.getItem('price2') || DEFAULTS.price2;
+  document.getElementById('waitPrice').value = localStorage.getItem('waitPrice') || DEFAULTS.waitPrice;
+  document.getElementById('nightExtra').value = localStorage.getItem('nightExtra') || DEFAULTS.nightExtra;
+}
+
+function savePrice() {
+  localStorage.setItem('openPrice', document.getElementById('openPrice').value);
+  localStorage.setItem('price1', document.getElementById('price1').value);
+  localStorage.setItem('price2', document.getElementById('price2').value);
+  localStorage.setItem('waitPrice', document.getElementById('waitPrice').value);
+  localStorage.setItem('nightExtra', document.getElementById('nightExtra').value);
+  alert('Đã lưu bảng giá.');
+}
+
+function resetPrice() {
+  if(!confirm('Bạn có muốn đặt lại bảng giá về mặc định không?')) return;
+  localStorage.removeItem('openPrice');
+  localStorage.removeItem('price1');
+  localStorage.removeItem('price2');
+  localStorage.removeItem('waitPrice');
+  localStorage.removeItem('nightExtra');
+  loadPrice();
+  alert('Đã reset về mặc định.');
+}
+
+function togglePriceBox() {
+  const box = document.getElementById('priceBox');
+  box.classList.toggle('hidden');
+  box.setAttribute('aria-hidden', box.classList.contains('hidden'));
+}
+
+function calc() {
+  // ensure function exists globally for inline handlers
+  return calcPrices();
+}
+
+function calcPrices() {
+  const km = parseFloat(document.getElementById('km').value) || 0;
+  const wait = parseFloat(document.getElementById('wait').value) || 0;
+  const night = document.getElementById('night').checked;
+
+  // read latest prices from storage (ensures saved values used)
+  const openPrice = parseFloat(localStorage.getItem('openPrice')) || DEFAULTS.openPrice;
+  const price1 = parseFloat(localStorage.getItem('price1')) || DEFAULTS.price1;
+  const price2 = parseFloat(localStorage.getItem('price2')) || DEFAULTS.price2;
+  const waitPrice = parseFloat(localStorage.getItem('waitPrice')) || DEFAULTS.waitPrice;
+  const nightExtra = parseFloat(localStorage.getItem('nightExtra')) || DEFAULTS.nightExtra;
+
+  if (km <= 0) {
+    document.getElementById('resultBox').classList.add('hidden');
+    document.getElementById('noData').style.display = 'block';
+    return { error: 'no-km' };
+  }
+
+  // distance breakdown
+  // open covers up to 2 km (0-2)
+  let remaining = Math.max(0, km - 2);
+  const kmMid = Math.min(8, remaining); // 2-10 => up to 8 km
+  remaining = Math.max(0, remaining - kmMid);
+  const kmLong = remaining; // >10
+
+  const v_open = (km > 0) ? openPrice : 0;
+  const v_mid = kmMid * price1;
+  const v_long = kmLong * price2;
+
+  const chargedWait = wait > 4 ? (wait - 4) : 0; // starts charging from minute 5
+  const v_wait = chargedWait * waitPrice;
+
+  // fix ternary: only one conditional
+  const v_night = night ? nightExtra : 0;
+
+  const total = v_open + v_mid + v_long + v_wait + v_night;
+
+  // render details
+  document.getElementById('noData').style.display = 'none';
+  document.getElementById('resultBox').classList.remove('hidden');
+
+  const detailBox = document.getElementById('detailBox');
+  detailBox.innerHTML = '';
+
+  function addLine(label, val) {
+    const div = document.createElement('div');
+    div.className = 'line';
+    const left = document.createElement('div'); left.textContent = label;
+    const right = document.createElement('div'); right.textContent = val.toLocaleString('vi-VN') + ' đ';
+    div.appendChild(left); div.appendChild(right);
+    detailBox.appendChild(div);
+  }
+
+  addLine('Mở cửa', v_open);
+  addLine('Km 2–10 (' + kmMid + ' km)', v_mid);
+  addLine('Km >10 (' + kmLong + ' km)', v_long);
+  addLine('Tiền chờ (' + chargedWait + ' phút)', v_wait);
+  addLine('Phụ phí đêm', v_night);
+
+  document.getElementById('totalBox').textContent = total.toLocaleString('vi-VN') + ' đ';
+
+  return { total, v_open, v_mid, v_long, v_wait, v_night };
+}
+
+// wire up events
+document.getElementById('calcBtn').addEventListener('click', calcPrices);
+document.getElementById('togglePrice').addEventListener('click', togglePriceBox);
+document.getElementById('savePrice').addEventListener('click', savePrice);
+document.getElementById('resetPrice').addEventListener('click', resetPrice);
+
+// init
+loadPrice();
+</script>
+</body>
 </html>

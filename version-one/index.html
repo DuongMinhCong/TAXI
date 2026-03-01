@@ -42,21 +42,36 @@ button{
   font-weight:700;
   margin-top:14px;
 }
-.checkbox{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
+.checkbox{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin-top:12px;
+}
 .checkbox input{width:auto;margin-top:4px}
 .note{font-size:14px;color:#555}
-.line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd}
-.total{font-size:20px;font-weight:900;text-align:right;margin-top:10px}
+.line{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px dashed #ddd;
+}
+.total{
+  font-size:20px;
+  font-weight:900;
+  text-align:right;
+  margin-top:10px;
+}
 .hidden{display:none}
-.toggle{background:#34c759}
-.warn{color:#c1121f;font-weight:700;text-align:center;margin-top:8px}
 .muted{color:#6b7280;font-size:13px}
+.warn{color:#c1121f;font-weight:700;text-align:center;margin-top:8px}
+.reset{background:#ff3b30}
 </style>
 </head>
 
 <body>
 
-<!-- TÍNH TIỀN -->
+<!-- ================= TÍNH TIỀN ================= -->
 <div class="card">
 <h2>🚕 TÍNH TIỀN CƯỚC</h2>
 
@@ -80,33 +95,30 @@ button{
 <button onclick="calc()">TÍNH TIỀN</button>
 </div>
 
-<!-- KẾT QUẢ -->
+<!-- ================= KẾT QUẢ ================= -->
 <div class="card hidden" id="result">
 <h2>📄 CHI TIẾT</h2>
 <div id="detail"></div>
 <div class="total" id="total"></div>
 </div>
 
-<!-- BẢNG GIÁ DECAL -->
+<!-- ================= BẢNG GIÁ DECAL ================= -->
 <div class="card">
 <div style="border:2px solid #1f3a8a;border-radius:14px;overflow:hidden">
   <div style="padding:10px;text-align:center;font-weight:800;color:#c1121f;font-size:18px">
-    ANH CÔNG VF3
-  </div>
-  <div style="background:#e5e7eb;font-weight:900;font-size:20px;color:#1f3a8a;padding:8px;text-align:center">
     BẢNG GIÁ CƯỚC
   </div>
 
   <div style="display:flex;border-top:2px solid #1f3a8a">
     <div style="flex:1;padding:10px;border-right:1px solid #ccc;text-align:center">
-      <b>Giá mở cửa</b>
+      <b>Mở cửa</b>
       <div class="muted">Đ/lượt</div>
       <div style="color:#c1121f;font-size:22px;font-weight:900">
         <span id="viewOpen"></span>đ
       </div>
     </div>
     <div style="flex:1;padding:10px;border-right:1px solid #ccc;text-align:center">
-      <b>0.3km → 60km</b>
+      <b>0.3–60km</b>
       <div class="muted">Đ/km</div>
       <div style="color:#c1121f;font-size:22px;font-weight:900">
         <span id="viewKm1"></span>đ
@@ -124,16 +136,23 @@ button{
   <div style="padding:10px;font-size:14px;line-height:1.5;border-top:1px solid #ccc">
     • Đi 2 chiều từ <b>30km</b> trở lên giảm <b>70% chiều về</b><br>
     • Tiền chờ: <b><span id="viewWait"></span>đ / phút</b><br>
-    • Khách thanh toán cầu phà, bến bãi<br>
     • Giá đã bao gồm VAT
   </div>
 </div>
 </div>
 
-<!-- NÚT CHỈNH GIÁ -->
-<button class="toggle" onclick="askPin()">🔒 CHỈNH BẢNG GIÁ</button>
+<!-- ================= KHÓA CHỈNH GIÁ ================= -->
+<div class="card">
+<div class="checkbox">
+  <input type="checkbox" id="allowEdit">
+  <div>
+    <strong>Cho phép chỉnh bảng giá</strong>
+    <div class="note">Tích vào để nhập mã PIN chỉnh giá</div>
+  </div>
+</div>
+</div>
 
-<!-- KHUNG CHỈNH GIÁ -->
+<!-- ================= CHỈNH GIÁ ================= -->
 <div class="card hidden" id="priceBox">
 <h2>⚙️ CHỈNH GIÁ (CÓ KHÓA PIN)</h2>
 
@@ -152,55 +171,84 @@ button{
 <label>Đổi mã PIN</label>
 <input id="newPin" placeholder="Để trống nếu không đổi">
 
-<button onclick="savePrice()">💾 LƯU</button>
-<div class="warn">⚠️ Khách không vào được mục này nếu không có PIN</div>
+<button onclick="savePrice()">💾 LƯU GIÁ</button>
+<button class="reset" onclick="resetDefault()">♻️ RESET VỀ GIÁ CHUẨN</button>
+
+<div class="warn">⚠️ Bỏ dấu tích là khách không chỉnh được</div>
 </div>
 
 <script>
 const DEF={open:5000,km1:7500,km2:7000,wait:500,pin:"1234"};
 
-function g(k){return localStorage.getItem(k)||DEF[k]}
-function s(k,v){localStorage.setItem(k,v)}
+function g(k){
+  const v=localStorage.getItem(k);
+  if(v===null||v===""||isNaN(v)) return DEF[k];
+  return Number(v);
+}
+function s(k,v){localStorage.setItem(k,v);}
 
 function refreshBoard(){
- viewOpen.textContent=(+g("open")).toLocaleString();
- viewKm1.textContent=(+g("km1")).toLocaleString();
- viewKm2.textContent=(+g("km2")).toLocaleString();
- viewWait.textContent=(+g("wait")).toLocaleString();
+  viewOpen.textContent=g("open").toLocaleString();
+  viewKm1.textContent=g("km1").toLocaleString();
+  viewKm2.textContent=g("km2").toLocaleString();
+  viewWait.textContent=g("wait").toLocaleString();
 }
 refreshBoard();
 
-function askPin(){
- const p=prompt("Nhập mã PIN để chỉnh giá:");
- if(p===g("pin")) priceBox.classList.remove("hidden");
- else alert("Sai mã PIN");
-}
+allowEdit.onchange=function(){
+  if(this.checked){
+    const p=prompt("Nhập mã PIN:");
+    if(p=== (localStorage.getItem("pin")||DEF.pin)){
+      priceBox.classList.remove("hidden");
+      open.value=g("open");
+      km1.value=g("km1");
+      km2.value=g("km2");
+      waitPrice.value=g("wait");
+    }else{
+      alert("Sai mã PIN");
+      this.checked=false;
+    }
+  }else{
+    priceBox.classList.add("hidden");
+  }
+};
 
 function savePrice(){
- s("open",open.value);
- s("km1",km1.value);
- s("km2",km2.value);
- s("wait",waitPrice.value);
- if(newPin.value) s("pin",newPin.value);
- refreshBoard();
- alert("Đã lưu");
+  s("open",open.value);
+  s("km1",km1.value);
+  s("km2",km2.value);
+  s("wait",waitPrice.value);
+  if(newPin.value) s("pin",newPin.value);
+  refreshBoard();
+  alert("Đã lưu bảng giá");
+}
+
+function resetDefault(){
+  if(!confirm("Reset về giá chuẩn?")) return;
+  localStorage.clear();
+  refreshBoard();
+  priceBox.classList.add("hidden");
+  allowEdit.checked=false;
+  alert("Đã reset về giá chuẩn");
 }
 
 function calc(){
- const kmv=+km.value,w=+wait.value;
- let go= kmv<=60? kmv*g("km1"):60*g("km1")+(kmv-60)*g("km2");
- let back=(round.checked && kmv>=30)? go*0.3:0;
- let waitC=w*g("wait");
- let total=(+g("open"))+go+back+waitC;
+  const kmv=Number(km.value)||0;
+  const w=Number(wait.value)||0;
 
- detail.innerHTML=`
- <div class="line"><span>Mở cửa</span><span>${(+g("open")).toLocaleString()}đ</span></div>
- <div class="line"><span>Chiều đi</span><span>${go.toLocaleString()}đ</span></div>
- <div class="line"><span>Chiều về</span><span>${back.toLocaleString()}đ</span></div>
- <div class="line"><span>Tiền chờ</span><span>${waitC.toLocaleString()}đ</span></div>
- `;
- total.textContent="TỔNG: "+total.toLocaleString()+" đ";
- result.classList.remove("hidden");
+  let go= kmv<=60 ? kmv*g("km1") : 60*g("km1")+(kmv-60)*g("km2");
+  let back=(round.checked && kmv>=30)? go*0.3:0;
+  let waitC=w*g("wait");
+  let totalMoney=g("open")+go+back+waitC;
+
+  detail.innerHTML=`
+    <div class="line"><span>Mở cửa</span><span>${g("open").toLocaleString()} đ</span></div>
+    <div class="line"><span>Chiều đi</span><span>${go.toLocaleString()} đ</span></div>
+    <div class="line"><span>Chiều về</span><span>${back.toLocaleString()} đ</span></div>
+    <div class="line"><span>Tiền chờ</span><span>${waitC.toLocaleString()} đ</span></div>
+  `;
+  total.textContent="TỔNG: "+totalMoney.toLocaleString()+" đ";
+  result.classList.remove("hidden");
 }
 </script>
 

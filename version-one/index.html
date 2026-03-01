@@ -6,13 +6,10 @@
 <title>Tính tiền cước</title>
 
 <style>
-:root{
-  --main:#0a84ff;
-  --bg:#f2f2f7;
-}
+:root{--main:#0a84ff;--bg:#f2f2f7}
 body{
   margin:0;
-  font-family:-apple-system, BlinkMacSystemFont, system-ui;
+  font-family:-apple-system,BlinkMacSystemFont,system-ui;
   background:var(--bg);
   padding:16px;
   padding-bottom:env(safe-area-inset-bottom);
@@ -25,11 +22,7 @@ body{
   box-shadow:0 6px 18px rgba(0,0,0,.08);
 }
 h2{margin:0 0 10px}
-label{
-  font-weight:600;
-  margin-top:10px;
-  display:block;
-}
+label{font-weight:600;display:block;margin-top:10px}
 input{
   width:100%;
   padding:14px;
@@ -37,17 +30,6 @@ input{
   border-radius:12px;
   border:1px solid #ddd;
   margin-top:6px;
-}
-.checkbox{
-  display:flex;
-  gap:10px;
-  align-items:flex-start;
-  margin-top:12px;
-}
-.checkbox input{width:auto;margin-top:4px}
-.note{
-  font-size:14px;
-  color:#555;
 }
 button{
   width:100%;
@@ -60,104 +42,24 @@ button{
   font-weight:700;
   margin-top:14px;
 }
-.line{
-  display:flex;
-  justify-content:space-between;
-  padding:6px 0;
-  border-bottom:1px dashed #ddd;
-}
-.total{
-  font-size:20px;
-  font-weight:900;
-  text-align:right;
-  margin-top:10px;
-}
-.toggle{
-  background:#34c759;
-}
+.checkbox{display:flex;gap:10px;align-items:flex-start;margin-top:12px}
+.checkbox input{width:auto;margin-top:4px}
+.note{font-size:14px;color:#555}
+.line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd}
+.total{font-size:20px;font-weight:900;text-align:right;margin-top:10px}
 .hidden{display:none}
+.toggle{background:#34c759}
+.warn{color:#c1121f;font-weight:700;text-align:center;margin-top:8px}
+.muted{color:#6b7280;font-size:13px}
 </style>
 </head>
 
 <body>
 
+<!-- TÍNH TIỀN -->
 <div class="card">
 <h2>🚕 TÍNH TIỀN CƯỚC</h2>
-<div class="card">
-  <div style="
-    border:2px solid #1f3a8a;
-    border-radius:14px;
-    overflow:hidden;
-    text-align:center;
-    background:#fff">
 
-    <div style="
-      background:#fff;
-      padding:10px;
-      font-weight:800;
-      color:#c1121f;
-      font-size:18px">
-      CÔNG TY TNHH MTV THẢO CHI SOLAR
-    </div>
-
-    <div style="
-      background:#e5e7eb;
-      font-weight:900;
-      font-size:20px;
-      color:#1f3a8a;
-      padding:8px">
-      BẢNG GIÁ CƯỚC
-    </div>
-
-    <div style="display:flex;border-top:2px solid #1f3a8a">
-      <div style="flex:1;padding:10px;border-right:1px solid #ccc">
-        <div style="font-weight:700">Giá mở cửa</div>
-        <div class="muted">Đ/lượt</div>
-        <div style="color:#c1121f;font-size:22px;font-weight:900">
-          5.000đ
-        </div>
-      </div>
-
-      <div style="flex:1;padding:10px;border-right:1px solid #ccc">
-        <div style="font-weight:700">0.3km → 60km</div>
-        <div class="muted">Đ/km</div>
-        <div style="color:#c1121f;font-size:22px;font-weight:900">
-          7.500đ
-        </div>
-      </div>
-
-      <div style="flex:1;padding:10px">
-        <div style="font-weight:700">Trên 60km</div>
-        <div class="muted">Đ/km</div>
-        <div style="color:#c1121f;font-size:22px;font-weight:900">
-          7.000đ
-        </div>
-      </div>
-    </div>
-
-    <div style="
-      text-align:left;
-      padding:10px;
-      font-size:14px;
-      line-height:1.5;
-      border-top:1px solid #ccc">
-
-      • Đi 2 chiều từ <b>30km trở lên</b> giảm <b>70% chiều về</b><br>
-      • Tiền chờ: <b>30.000đ / giờ</b><br>
-      • Khách thanh toán chi phí cầu phà, bến bãi<br>
-      • Bảng giá đã bao gồm VAT
-    </div>
-
-    <div style="
-      text-align:right;
-      padding:8px;
-      font-weight:700;
-      color:#c1121f">
-      ☎ Đường dây nóng: 0916 014 968
-    </div>
-
-  </div>
-</div>
 <label>Quãng đường 1 chiều (km)</label>
 <input id="km" type="number" inputmode="decimal" value="10">
 
@@ -169,7 +71,7 @@ button{
   <div>
     <strong>Đi 2 chiều (có quay về)</strong>
     <div class="note">
-      Tích khi quãng đường ≥30km.<br>
+      Chỉ tích khi quãng đường <b>từ 30km trở lên</b>.<br>
       Chiều về chỉ tính <b>30% tiền km</b> (giảm 70%).
     </div>
   </div>
@@ -178,75 +80,126 @@ button{
 <button onclick="calc()">TÍNH TIỀN</button>
 </div>
 
+<!-- KẾT QUẢ -->
 <div class="card hidden" id="result">
 <h2>📄 CHI TIẾT</h2>
 <div id="detail"></div>
 <div class="total" id="total"></div>
 </div>
 
-<button class="toggle" onclick="togglePrice()">⚙️ CHỈNH BẢNG GIÁ</button>
+<!-- BẢNG GIÁ DECAL -->
+<div class="card">
+<div style="border:2px solid #1f3a8a;border-radius:14px;overflow:hidden">
+  <div style="padding:10px;text-align:center;font-weight:800;color:#c1121f;font-size:18px">
+    ANH CÔNG VF3
+  </div>
+  <div style="background:#e5e7eb;font-weight:900;font-size:20px;color:#1f3a8a;padding:8px;text-align:center">
+    BẢNG GIÁ CƯỚC
+  </div>
 
+  <div style="display:flex;border-top:2px solid #1f3a8a">
+    <div style="flex:1;padding:10px;border-right:1px solid #ccc;text-align:center">
+      <b>Giá mở cửa</b>
+      <div class="muted">Đ/lượt</div>
+      <div style="color:#c1121f;font-size:22px;font-weight:900">
+        <span id="viewOpen"></span>đ
+      </div>
+    </div>
+    <div style="flex:1;padding:10px;border-right:1px solid #ccc;text-align:center">
+      <b>0.3km → 60km</b>
+      <div class="muted">Đ/km</div>
+      <div style="color:#c1121f;font-size:22px;font-weight:900">
+        <span id="viewKm1"></span>đ
+      </div>
+    </div>
+    <div style="flex:1;padding:10px;text-align:center">
+      <b>Trên 60km</b>
+      <div class="muted">Đ/km</div>
+      <div style="color:#c1121f;font-size:22px;font-weight:900">
+        <span id="viewKm2"></span>đ
+      </div>
+    </div>
+  </div>
+
+  <div style="padding:10px;font-size:14px;line-height:1.5;border-top:1px solid #ccc">
+    • Đi 2 chiều từ <b>30km</b> trở lên giảm <b>70% chiều về</b><br>
+    • Tiền chờ: <b><span id="viewWait"></span>đ / phút</b><br>
+    • Khách thanh toán cầu phà, bến bãi<br>
+    • Giá đã bao gồm VAT
+  </div>
+</div>
+</div>
+
+<!-- NÚT CHỈNH GIÁ -->
+<button class="toggle" onclick="askPin()">🔒 CHỈNH BẢNG GIÁ</button>
+
+<!-- KHUNG CHỈNH GIÁ -->
 <div class="card hidden" id="priceBox">
-<h2>⚙️ BẢNG GIÁ</h2>
+<h2>⚙️ CHỈNH GIÁ (CÓ KHÓA PIN)</h2>
 
-<label>Giá mở cửa (đ/lượt)</label>
+<label>Giá mở cửa</label>
 <input id="open">
 
-<label>Giá km (0.3 → 60km)</label>
+<label>Giá km 0.3 → 60km</label>
 <input id="km1">
 
-<label>Giá km (trên 60km)</label>
+<label>Giá km trên 60km</label>
 <input id="km2">
 
 <label>Giá chờ (đ/phút)</label>
 <input id="waitPrice">
 
-<button onclick="savePrice()">LƯU GIÁ</button>
+<label>Đổi mã PIN</label>
+<input id="newPin" placeholder="Để trống nếu không đổi">
+
+<button onclick="savePrice()">💾 LƯU</button>
+<div class="warn">⚠️ Khách không vào được mục này nếu không có PIN</div>
 </div>
 
 <script>
-const DEF={
- open:5000, km1:7500, km2:7000, wait:500
-};
+const DEF={open:5000,km1:7500,km2:7000,wait:500,pin:"1234"};
 
-function load(){
- for(let k in DEF){
-  document.getElementById(k=="open"?"open":k=="wait"?"waitPrice":k).value=
-   localStorage.getItem(k)||DEF[k];
- }
+function g(k){return localStorage.getItem(k)||DEF[k]}
+function s(k,v){localStorage.setItem(k,v)}
+
+function refreshBoard(){
+ viewOpen.textContent=(+g("open")).toLocaleString();
+ viewKm1.textContent=(+g("km1")).toLocaleString();
+ viewKm2.textContent=(+g("km2")).toLocaleString();
+ viewWait.textContent=(+g("wait")).toLocaleString();
 }
-load();
+refreshBoard();
+
+function askPin(){
+ const p=prompt("Nhập mã PIN để chỉnh giá:");
+ if(p===g("pin")) priceBox.classList.remove("hidden");
+ else alert("Sai mã PIN");
+}
 
 function savePrice(){
- localStorage.setItem("open",open.value);
- localStorage.setItem("km1",km1.value);
- localStorage.setItem("km2",km2.value);
- localStorage.setItem("wait",waitPrice.value);
- alert("Đã lưu bảng giá");
-}
-
-function togglePrice(){
- priceBox.classList.toggle("hidden");
+ s("open",open.value);
+ s("km1",km1.value);
+ s("km2",km2.value);
+ s("wait",waitPrice.value);
+ if(newPin.value) s("pin",newPin.value);
+ refreshBoard();
+ alert("Đã lưu");
 }
 
 function calc(){
- const kmv=+km.value, w=+wait.value;
- const openP=+localStorage.getItem("open")||DEF.open;
- const km1P=+localStorage.getItem("km1")||DEF.km1;
- const km2P=+localStorage.getItem("km2")||DEF.km2;
- const waitP=+localStorage.getItem("wait")||DEF.wait;
-
- let go= kmv<=60 ? kmv*km1P : 60*km1P+(kmv-60)*km2P;
+ const kmv=+km.value,w=+wait.value;
+ let go= kmv<=60? kmv*g("km1"):60*g("km1")+(kmv-60)*g("km2");
  let back=(round.checked && kmv>=30)? go*0.3:0;
- let waitC=w*waitP;
+ let waitC=w*g("wait");
+ let total=(+g("open"))+go+back+waitC;
 
  detail.innerHTML=`
- <div class="line"><span>Mở cửa</span><span>${openP.toLocaleString()}đ</span></div>
+ <div class="line"><span>Mở cửa</span><span>${(+g("open")).toLocaleString()}đ</span></div>
  <div class="line"><span>Chiều đi</span><span>${go.toLocaleString()}đ</span></div>
  <div class="line"><span>Chiều về</span><span>${back.toLocaleString()}đ</span></div>
  <div class="line"><span>Tiền chờ</span><span>${waitC.toLocaleString()}đ</span></div>
  `;
- total.textContent="TỔNG: "+(openP+go+back+waitC).toLocaleString()+" đ";
+ total.textContent="TỔNG: "+total.toLocaleString()+" đ";
  result.classList.remove("hidden");
 }
 </script>

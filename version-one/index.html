@@ -70,38 +70,7 @@ button{
 </head>
 
 <body>
-
-<!-- ================= TÍNH TIỀN ================= -->
-<div class="card">
-<h2>🚕 TÍNH TIỀN CƯỚC</h2>
-
-<label>Quãng đường 1 chiều (km)</label>
-<input id="km" type="number" inputmode="decimal" value="10">
-
-<label>Thời gian chờ (phút)</label>
-<input id="wait" type="number" inputmode="numeric" value="0">
-
-<div class="checkbox">
-  <input type="checkbox" id="round">
-  <div>
-    <strong>Đi 2 chiều (có quay về)</strong>
-    <div class="note">
-      Chỉ tích khi quãng đường <b>từ 30km trở lên</b>.<br>
-      Chiều về chỉ tính <b>30% tiền km</b> (giảm 70%).
-    </div>
-  </div>
-</div>
-
-<button onclick="calc()">TÍNH TIỀN</button>
-</div>
-
-<!-- ================= KẾT QUẢ ================= -->
-<div class="card hidden" id="result">
-<h2>📄 CHI TIẾT</h2>
-<div id="detail"></div>
-<div class="total" id="total"></div>
-</div>
-
+  
 <!-- ================= BẢNG GIÁ DECAL ================= -->
 <div class="card">
 <div style="border:2px solid #1f3a8a;border-radius:14px;overflow:hidden">
@@ -139,6 +108,36 @@ button{
     • Giá đã bao gồm VAT
   </div>
 </div>
+</div>
+<!-- ================= TÍNH TIỀN ================= -->
+<div class="card">
+<h2>🚕 TÍNH TIỀN CƯỚC</h2>
+
+<label>Quãng đường 1 chiều (km)</label>
+<input id="km" type="number" inputmode="decimal" value="10">
+
+<label>Thời gian chờ (phút)</label>
+<input id="wait" type="number" inputmode="numeric" value="0">
+
+<div class="checkbox">
+  <input type="checkbox" id="round">
+  <div>
+    <strong>Đi 2 chiều (có quay về)</strong>
+    <div class="note">
+      Chỉ tích khi quãng đường <b>từ 30km trở lên</b>.<br>
+      Chiều về chỉ tính <b>30% tiền km</b> (giảm 70%).
+    </div>
+  </div>
+</div>
+
+<button onclick="calc()">TÍNH TIỀN</button>
+</div>
+
+<!-- ================= KẾT QUẢ ================= -->
+<div class="card hidden" id="result">
+<h2>📄 CHI TIẾT</h2>
+<div id="detail"></div>
+<div class="total" id="total"></div>
 </div>
 
 <!-- ================= KHÓA CHỈNH GIÁ ================= -->

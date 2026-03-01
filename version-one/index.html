@@ -1,89 +1,179 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Tính tiền cước</title>
+
 <style>
-body{font-family:system-ui;background:#f5f7fa;padding:16px}
-.card{background:#fff;padding:14px;border-radius:12px;margin-bottom:12px;box-shadow:0 4px 14px rgba(0,0,0,.08)}
-label{font-weight:600;display:block;margin-top:8px}
-input{width:100%;padding:10px;border-radius:8px;border:1px solid #ddd}
-button{margin-top:12px;width:100%;padding:12px;border:0;border-radius:10px;background:#2d7df4;color:#fff;font-weight:700}
-.line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #ddd}
-.total{font-size:18px;font-weight:900;text-align:right;margin-top:8px}
+:root{
+  --main:#0a84ff;
+  --bg:#f2f2f7;
+}
+body{
+  margin:0;
+  font-family:-apple-system, BlinkMacSystemFont, system-ui;
+  background:var(--bg);
+  padding:16px;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.card{
+  background:#fff;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+  box-shadow:0 6px 18px rgba(0,0,0,.08);
+}
+h2{margin:0 0 10px}
+label{
+  font-weight:600;
+  margin-top:10px;
+  display:block;
+}
+input{
+  width:100%;
+  padding:14px;
+  font-size:17px;
+  border-radius:12px;
+  border:1px solid #ddd;
+  margin-top:6px;
+}
+.checkbox{
+  display:flex;
+  gap:10px;
+  align-items:flex-start;
+  margin-top:12px;
+}
+.checkbox input{width:auto;margin-top:4px}
+.note{
+  font-size:14px;
+  color:#555;
+}
+button{
+  width:100%;
+  padding:15px;
+  font-size:18px;
+  border-radius:14px;
+  border:none;
+  background:var(--main);
+  color:#fff;
+  font-weight:700;
+  margin-top:14px;
+}
+.line{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px dashed #ddd;
+}
+.total{
+  font-size:20px;
+  font-weight:900;
+  text-align:right;
+  margin-top:10px;
+}
+.toggle{
+  background:#34c759;
+}
+.hidden{display:none}
 </style>
 </head>
 
 <body>
 
 <div class="card">
-  <h3>TÍNH TIỀN CƯỚC</h3>
+<h2>🚕 TÍNH TIỀN CƯỚC</h2>
 
-  <label>Quãng đường 1 chiều (km)</label>
-  <input id="km" type="number" step="0.1" value="10">
+<label>Quãng đường 1 chiều (km)</label>
+<input id="km" type="number" inputmode="decimal" value="10">
 
-  <label>Thời gian chờ (phút)</label>
-  <input id="wait" type="number" value="0">
+<label>Thời gian chờ (phút)</label>
+<input id="wait" type="number" inputmode="numeric" value="0">
 
-  <label>
-    <input type="checkbox" id="roundTrip">
-    Đi 2 chiều (≥30km giảm 70% chiều về)
-  </label>
-
-  <button onclick="calc()">TÍNH TIỀN</button>
+<div class="checkbox">
+  <input type="checkbox" id="round">
+  <div>
+    <strong>Đi 2 chiều (có quay về)</strong>
+    <div class="note">
+      Tích khi quãng đường ≥30km.<br>
+      Chiều về chỉ tính <b>30% tiền km</b> (giảm 70%).
+    </div>
+  </div>
 </div>
 
-<div class="card" id="result" style="display:none">
-  <h3>CHI TIẾT</h3>
-  <div id="detail"></div>
-  <div class="total" id="total"></div>
+<button onclick="calc()">TÍNH TIỀN</button>
+</div>
+
+<div class="card hidden" id="result">
+<h2>📄 CHI TIẾT</h2>
+<div id="detail"></div>
+<div class="total" id="total"></div>
+</div>
+
+<button class="toggle" onclick="togglePrice()">⚙️ CHỈNH BẢNG GIÁ</button>
+
+<div class="card hidden" id="priceBox">
+<h2>⚙️ BẢNG GIÁ</h2>
+
+<label>Giá mở cửa (đ/lượt)</label>
+<input id="open">
+
+<label>Giá km (0.3 → 60km)</label>
+<input id="km1">
+
+<label>Giá km (trên 60km)</label>
+<input id="km2">
+
+<label>Giá chờ (đ/phút)</label>
+<input id="waitPrice">
+
+<button onclick="savePrice()">LƯU GIÁ</button>
 </div>
 
 <script>
-const PRICE = {
-  open: 5000,
-  km0_60: 7500,
-  kmOver60: 7000,
-  waitPerMin: 500
+const DEF={
+ open:5000, km1:7500, km2:7000, wait:500
 };
 
+function load(){
+ for(let k in DEF){
+  document.getElementById(k=="open"?"open":k=="wait"?"waitPrice":k).value=
+   localStorage.getItem(k)||DEF[k];
+ }
+}
+load();
+
+function savePrice(){
+ localStorage.setItem("open",open.value);
+ localStorage.setItem("km1",km1.value);
+ localStorage.setItem("km2",km2.value);
+ localStorage.setItem("wait",waitPrice.value);
+ alert("Đã lưu bảng giá");
+}
+
+function togglePrice(){
+ priceBox.classList.toggle("hidden");
+}
+
 function calc(){
-  const km = parseFloat(document.getElementById('km').value)||0;
-  const wait = parseInt(document.getElementById('wait').value)||0;
-  const roundTrip = document.getElementById('roundTrip').checked;
+ const kmv=+km.value, w=+wait.value;
+ const openP=+localStorage.getItem("open")||DEF.open;
+ const km1P=+localStorage.getItem("km1")||DEF.km1;
+ const km2P=+localStorage.getItem("km2")||DEF.km2;
+ const waitP=+localStorage.getItem("wait")||DEF.wait;
 
-  if(km<=0) return alert("Nhập quãng đường!");
+ let go= kmv<=60 ? kmv*km1P : 60*km1P+(kmv-60)*km2P;
+ let back=(round.checked && kmv>=30)? go*0.3:0;
+ let waitC=w*waitP;
 
-  let costKm = 0;
-  if(km<=60){
-    costKm = km * PRICE.km0_60;
-  }else{
-    costKm = 60 * PRICE.km0_60 + (km-60) * PRICE.kmOver60;
-  }
-
-  let costOpen = PRICE.open;
-  let costWait = wait * PRICE.waitPerMin;
-
-  let costReturn = 0;
-  if(roundTrip && km>=30){
-    costReturn = costKm * 0.3; // giảm 70%
-  }
-
-  const total = costOpen + costKm + costReturn + costWait;
-
-  const detail = document.getElementById('detail');
-  detail.innerHTML = `
-    <div class="line"><span>Mở cửa</span><span>${costOpen.toLocaleString()} đ</span></div>
-    <div class="line"><span>Chiều đi</span><span>${costKm.toLocaleString()} đ</span></div>
-    <div class="line"><span>Chiều về</span><span>${costReturn.toLocaleString()} đ</span></div>
-    <div class="line"><span>Tiền chờ</span><span>${costWait.toLocaleString()} đ</span></div>
-  `;
-
-  document.getElementById('total').textContent =
-    "TỔNG: " + total.toLocaleString() + " đ";
-
-  document.getElementById('result').style.display="block";
+ detail.innerHTML=`
+ <div class="line"><span>Mở cửa</span><span>${openP.toLocaleString()}đ</span></div>
+ <div class="line"><span>Chiều đi</span><span>${go.toLocaleString()}đ</span></div>
+ <div class="line"><span>Chiều về</span><span>${back.toLocaleString()}đ</span></div>
+ <div class="line"><span>Tiền chờ</span><span>${waitC.toLocaleString()}đ</span></div>
+ `;
+ total.textContent="TỔNG: "+(openP+go+back+waitC).toLocaleString()+" đ";
+ result.classList.remove("hidden");
 }
 </script>
 
